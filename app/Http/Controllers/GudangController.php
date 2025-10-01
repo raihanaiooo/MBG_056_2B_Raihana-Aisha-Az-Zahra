@@ -9,6 +9,7 @@ use PhpParser\Builder\Function_;
 
 class GudangController extends Controller
 {
+    // Halaman dashboard
     public function index(){
         $bahan = BahanBaku::all();
         $today = Carbon::today();
@@ -27,6 +28,7 @@ class GudangController extends Controller
         return view('gudang.index', compact('bahan'));
     }
 
+    // Halaman tambah bahan baku
     public function create()
     {
         return view('gudang.create');
@@ -89,5 +91,15 @@ class GudangController extends Controller
         return redirect()->back()->with('success', 'Stok berhasil diperbarui');
     }
 
+    // Hapus bahan baku
+    public function destroy($id)
+    {
+        $bahan = BahanBaku::findOrFail($id);
+        if($bahan->status != 'kadaluarsa'){
+            return redirect()->route('gudang.index')->with('error', 'Bahan baku tidak kadaluarsa!');
+        }
+        $bahan->delete();
+        return redirect()->route('gudang.index')->with('success', 'Bahan baku berhasil dihapus');
+    }
     
 }

@@ -69,6 +69,13 @@
                                 Update
                             </button>
                         </form>
+                        <form action="{{ route('gudang.destroy', $item->id) }}" method="POST" class="inline-flex items-center">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded ml-1">
+                                Delete
+                            </button>
+                        </form>
                     </td>
                 </tr>
             @endforeach

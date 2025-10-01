@@ -23,7 +23,8 @@ Route::middleware(['auth.session', 'role:gudang'])->group(function () {
     Route::post('/gudang/bahan/store', [GudangController::class, 'store'])->name('gudang.store');
     // Update data
     Route::put('/gudang/bahan/{id}/update', [GudangController::class, 'update'])->name('gudang.update');
-
+    // Delete data
+    Route::delete('/gudang/bahan/{id}', [GudangController::class, 'destroy'])->name('gudang.destroy');
 });
 
 Route::middleware(['auth.session', 'role:dapur'])->group(function () {
