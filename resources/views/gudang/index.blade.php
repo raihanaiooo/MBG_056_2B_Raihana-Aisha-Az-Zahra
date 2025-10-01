@@ -8,9 +8,18 @@
 </head>
 <body class="bg-gray-100 min-h-screen p-8">
 
-<div class="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow-lg">
+    <div class="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow-lg">
+    <header class="bg-gray-900 text-white shadow-md">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+                <p class="text-sm">
+                    Halo, <span class="font-semibold">{{ session('user_name') }}</span> 
+                    ({{ session('user_role') }})
+                </p>
+            </div>
+    </header>
     <h1 class="text-2xl font-bold mb-6 text-center">Daftar Bahan Baku</h1>
-
     @if(session('success'))
         <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">
             {{ session('success') }}
