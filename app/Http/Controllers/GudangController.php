@@ -58,13 +58,7 @@ class GudangController extends Controller
         return redirect()->route('gudang.index')->with('success', 'Bahan baku berhasil ditambahkan');
     }
 
-    public function edit($id)
-    {
-        $bahan = BahanBaku::findOrFail($id);
-        return view('bahan.edit', compact('bahan'));
-    }
-
-
+    // Update bahan baku secara langsung (buat update jumlah stok)
     public function update(Request $request, $id)
     {
         $request->validate([
