@@ -9,7 +9,7 @@
     <h1>ini views dapur</h1>
         <form action="{{ route('logout') }}" method="POST" class="inline">
             @csrf
-            <button type="submit" ">
+            <button type="submit">
                 Logout
             </button>
         </form>

@@ -16,6 +16,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware(['auth.session', 'role:gudang'])->group(function () {
     //Dashboard
     Route::get('/gudang/dashboard', [GudangController::class, 'index'])->name('gudang.index');
+
+    // Tambah Bahan Baku
+    Route::get('/gudang/bahan/create', [GudangController::class, 'create'])->name('bahan.create');
+    Route::post('/gudang/bahan/store', [GudangController::class, 'store'])->name('bahan.store');
+
 });
 
 Route::middleware(['auth.session', 'role:dapur'])->group(function () {
