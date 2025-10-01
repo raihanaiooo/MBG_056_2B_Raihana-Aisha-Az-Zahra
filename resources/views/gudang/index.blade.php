@@ -60,8 +60,15 @@
                         {{ $item->status == 'tersedia' ? 'text-green-600' : '' }}">
                         {{ ucfirst($item->status) }}
                     </td>
-                    <td class="p-2 border flex justify-center gap-2">
-                        
+                    <td class="p-2 border">
+                        <form action="{{ route('gudang.update', $item->id) }}" method="POST" class="inline-flex items-center">
+                            @csrf
+                            @method('PUT')
+                            <input type="number" name="jumlah" value="{{ $item->jumlah }}" class="w-16 px-1 py-1 border rounded">
+                            <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded ml-1">
+                                Update
+                            </button>
+                        </form>
                     </td>
                 </tr>
             @endforeach

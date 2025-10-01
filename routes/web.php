@@ -17,9 +17,12 @@ Route::middleware(['auth.session', 'role:gudang'])->group(function () {
     //Dashboard
     Route::get('/gudang/dashboard', [GudangController::class, 'index'])->name('gudang.index');
 
-    // Tambah Bahan Baku
+    // Halaman tambah bahan baku
     Route::get('/gudang/bahan/create', [GudangController::class, 'create'])->name('gudang.create');
+    // Save data 
     Route::post('/gudang/bahan/store', [GudangController::class, 'store'])->name('gudang.store');
+    // Update data
+    Route::put('/gudang/bahan/{id}/update', [GudangController::class, 'update'])->name('gudang.update');
 
 });
 

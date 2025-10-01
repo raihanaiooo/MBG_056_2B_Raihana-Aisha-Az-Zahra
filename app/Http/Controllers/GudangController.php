@@ -23,8 +23,6 @@ class GudangController extends Controller
             } else {
                 $item->status = 'tersedia';
             }
-
-            // $item->save();
         }
         return view('gudang.index', compact('bahan'));
     }
@@ -58,6 +56,43 @@ class GudangController extends Controller
         ]);
 
         return redirect()->route('gudang.index')->with('success', 'Bahan baku berhasil ditambahkan');
+    }
+
+    public function edit($id)
+    {
+        $bahan = BahanBaku::findOrFail($id);
+        return view('bahan.edit', compact('bahan'));
+    }
+
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'jumlah' => 'required|integer',
+        ]);
+
+        $bahan = BahanBaku::findOrFail($id);
+
+        if ($request->jumlah < 0) {
+            return redirect()->back()->with('error', 'Stok tidak boleh kurang dari 0');
+        }
+
+        $bahan->jumlah = $request->jumlah;
+
+        // Update status otomatis
+        if ($bahan->jumlah == 0) {
+            $bahan->status = 'habis';
+        } elseif (now()->diffInDays($bahan->tanggal_kadaluarsa, false) <= 3) {
+            $bahan->status = 'segera kadaluarsa';
+        } elseif (now() >= $bahan->tanggal_kadaluarsa) {
+            $bahan->status = 'kadaluarsa';
+        } else {
+            $bahan->status = 'tersedia';
+        }
+
+        $bahan->save();
+
+        return redirect()->back()->with('success', 'Stok berhasil diperbarui');
     }
 
     
