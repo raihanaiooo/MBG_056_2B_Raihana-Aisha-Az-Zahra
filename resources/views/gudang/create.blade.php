@@ -26,7 +26,7 @@
         </div>
     @endif
 
-    <form action="{{ route('bahan.store') }}" method="POST" class="space-y-4">
+    <form action="{{ route('gudang.store') }}" method="POST" class="space-y-4">
         @csrf
         <div>
             <label class="block text-gray-700 mb-1">Nama</label>

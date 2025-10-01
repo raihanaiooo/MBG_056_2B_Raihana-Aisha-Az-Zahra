@@ -18,8 +18,8 @@ Route::middleware(['auth.session', 'role:gudang'])->group(function () {
     Route::get('/gudang/dashboard', [GudangController::class, 'index'])->name('gudang.index');
 
     // Tambah Bahan Baku
-    Route::get('/gudang/bahan/create', [GudangController::class, 'create'])->name('bahan.create');
-    Route::post('/gudang/bahan/store', [GudangController::class, 'store'])->name('bahan.store');
+    Route::get('/gudang/bahan/create', [GudangController::class, 'create'])->name('gudang.create');
+    Route::post('/gudang/bahan/store', [GudangController::class, 'store'])->name('gudang.store');
 
 });
 

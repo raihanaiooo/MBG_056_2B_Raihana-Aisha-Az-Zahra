@@ -29,6 +29,11 @@ class GudangController extends Controller
         return view('gudang.index', compact('bahan'));
     }
 
+    public function create()
+    {
+        return view('gudang.create');
+    }
+
     // Tambah Bahan Baku
     public function store(Request $request)
     {
@@ -52,6 +57,8 @@ class GudangController extends Controller
             'created_at' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Bahan baku berhasil ditambahkan');
+        return redirect()->route('gudang.index')->with('success', 'Bahan baku berhasil ditambahkan');
     }
+
+    
 }
