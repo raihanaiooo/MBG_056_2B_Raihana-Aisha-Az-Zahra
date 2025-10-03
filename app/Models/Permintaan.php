@@ -24,4 +24,8 @@ class Permintaan extends Model
     public function detail(){
         return $this->hasMany(PermintaanDetail::class,'permintaan_id');
     }
+
+    public function pemohon(){
+        return $this->belongsTo(User::class, 'pemohon_id');
+    }
 }

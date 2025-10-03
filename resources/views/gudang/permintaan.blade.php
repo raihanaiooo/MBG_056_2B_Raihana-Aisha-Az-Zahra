@@ -11,6 +11,7 @@
             <tr>
                 <th class="p-2 border">ID Permintaan</th>
                 <th class="p-2 border">Pemohon</th>
+                <th class="p-2 border">Status</th>
                 <th class="p-2 border">Tanggal Masak</th>
                 <th class="p-2 border">Menu</th>
                 <th class="p-2 border">Jumlah Porsi</th>
@@ -22,7 +23,16 @@
             @foreach($permintaan as $p)
             <tr class="text-center hover:bg-gray-50 transition">
                 <td class="p-2 border">{{ $p->id }}</td>
-                <td class="p-2 border">{{ $p->pemohon_id }}</td>
+                <td class="p-2 border">{{ $p->pemohon->name ?? '-' }}</td>
+                <td class="p-2 border">
+                    @if($p->status == 'menunggu')
+                        <span class="px-2 py-1 bg-yellow-300 text-yellow-800 rounded">Menunggu</span>
+                    @elseif($p->status == 'disetujui')
+                        <span class="px-2 py-1 bg-green-300 text-green-800 rounded">Disetujui</span>
+                    @elseif($p->status == 'ditolak')
+                        <span class="px-2 py-1 bg-red-300 text-red-800 rounded">Ditolak</span>
+                    @endif
+                </td>
                 <td class="p-2 border">{{ $p->tgl_masak }}</td>
                 <td class="p-2 border">{{ $p->menu_makan }}</td>
                 <td class="p-2 border">{{ $p->jumlah_porsi }}</td>
@@ -31,19 +41,23 @@
                         {{ $d->bahan->nama }} ({{ $d->jumlah_diminta }})<br>
                     @endforeach
                 </td>
-                <td class="p-2 border flex justify-center gap-1">
-                    <form action="{{ route('permintaan.acc', $p->id) }}" method="POST" class="acc-form">
-                        @csrf
-                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">
-                            ACC
-                        </button>
-                    </form>
-                    <form action="{{ route('permintaan.tolak', $p->id) }}" method="POST" class="tolak-form">
-                        @csrf
-                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
-                            Tolak
-                        </button>
-                    </form>
+                <td class="p-2 border flex items-center justify-center gap-1">
+                    @if($p->status == 'menunggu')
+                        <form class="acc-form flex items-center" action="{{ route('permintaan.acc', $p->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">
+                                ACC
+                            </button>
+                        </form>
+                        <form class="tolak-form flex items-center" action="{{ route('permintaan.tolak', $p->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
+                                Tolak
+                            </button>
+                        </form>
+                    @else
+                        <span class="text-gray-500">-</span>
+                    @endif
                 </td>
             </tr>
             @endforeach
