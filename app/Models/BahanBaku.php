@@ -22,5 +22,9 @@ class BahanBaku extends Model
         'created_at'
     ];
 
+    public function permintaanDetail(){
+        return $this->hasMany(PermintaanDetail::class, 'bahan_id');
+    }
+
     public $timestamps = false; // karena created_at manual
 }

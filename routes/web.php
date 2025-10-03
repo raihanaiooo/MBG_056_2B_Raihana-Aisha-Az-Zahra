@@ -25,6 +25,14 @@ Route::middleware(['auth.session', 'role:gudang'])->group(function () {
     Route::put('/gudang/bahan/{id}/update', [GudangController::class, 'update'])->name('gudang.update');
     // Delete data
     Route::delete('/gudang/bahan/{id}', [GudangController::class, 'destroy'])->name('gudang.destroy');
+
+    // Halaman permintaan
+    Route::get('/gudang/permintaan', [GudangController::class, 'permintaan'])->name('gudang.permintaan');
+    // ACC permintaan
+    Route::post('/gudang/permintaan/{id}/acc', [GudangController::class, 'accPermintaan'])->name('permintaan.acc');
+    // Tolak permintaan
+    Route::post('/gudang/permintaan/{id}/tolak', [GudangController::class, 'tolakPermintaan'])->name('permintaan.tolak');
+
 });
 
 Route::middleware(['auth.session', 'role:dapur'])->group(function () {

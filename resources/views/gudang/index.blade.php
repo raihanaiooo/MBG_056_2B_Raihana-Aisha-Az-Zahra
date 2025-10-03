@@ -1,43 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Bahan Baku</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 min-h-screen p-8">
+@extends('layouts.gudang')
 
-    <div class="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow-lg">
-    <header class="bg-gray-900 text-white shadow-md">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold">Admin Dashboard</h1>
-                <p class="text-sm">
-                    Halo, <span class="font-semibold">{{ session('user_name') }}</span> 
-                    ({{ session('user_role') }})
-                </p>
-            </div>
-    </header>
-    <h1 class="text-2xl font-bold mb-6 text-center">Daftar Bahan Baku</h1>
-    @if(session('success'))
-        <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">
-            {{ session('success') }}
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="bg-red-100 text-red-800 px-4 py-2 rounded mb-4">
-            {{ session('error') }}
-        </div>
-    @endif
+@section('title', 'Daftar Bahan Baku')
 
-    <!-- Tombol Tambah Bahan Baku -->
-    <div class="mb-4">
-        <a href="{{ route('gudang.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
-            Tambah Bahan Baku
-        </a>
-    </div>
+@section('content')
+<h1 class="text-2xl font-bold mb-6 text-center">Daftar Bahan Baku</h1>
 
+<!-- Tombol Tambah Bahan Baku -->
+<div class="mb-4 text-right">
+    <a href="{{ route('gudang.create') }}" 
+       class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow transition duration-150">
+        Tambah Bahan Baku
+    </a>
+</div>
+
+<!-- Tabel Bahan Baku -->
+<div class="overflow-x-auto">
     <table class="w-full border border-gray-300 rounded-lg overflow-hidden">
         <thead class="bg-gray-200">
             <tr>
@@ -54,7 +31,7 @@
         </thead>
         <tbody>
             @foreach($bahan as $item)
-                <tr class="text-center">
+                <tr class="text-center hover:bg-gray-50 transition">
                     <td class="p-2 border">{{ $item->id }}</td>
                     <td class="p-2 border">{{ $item->nama }}</td>
                     <td class="p-2 border">{{ $item->kategori }}</td>
@@ -69,19 +46,19 @@
                         {{ $item->status == 'tersedia' ? 'text-green-600' : '' }}">
                         {{ ucfirst($item->status) }}
                     </td>
-                    <td class="p-2 border">
+                    <td class="p-2 border flex justify-center gap-1">
                         <form action="{{ route('gudang.update', $item->id) }}" method="POST" class="inline-flex items-center">
                             @csrf
                             @method('PUT')
                             <input type="number" name="jumlah" value="{{ $item->jumlah }}" class="w-16 px-1 py-1 border rounded">
-                            <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded ml-1">
+                            <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded shadow transition duration-150">
                                 Update
                             </button>
                         </form>
-                        <form action="{{ route('gudang.destroy', $item->id) }}" method="POST" class="inline-flex items-center">
+                        <form action="{{ route('gudang.destroy', $item->id) }}" method="POST" class="delete-form">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded ml-1">
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow transition duration-150">
                                 Delete
                             </button>
                         </form>
@@ -90,14 +67,50 @@
             @endforeach
         </tbody>
     </table>
-
-    <form action="{{ route('logout') }}" method="POST" class="inline mt-4">
-        @csrf
-        <button type="submit" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
-            Logout
-        </button>
-    </form>
 </div>
+@endsection
 
-</body>
-</html>
+@section('scripts')
+<script>
+    const flashSuccess = "{{ session('success') ?? '' }}";
+    const flashError   = "{{ session('error') ?? '' }}";
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        if(flashSuccess) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: flashSuccess
+            });
+        }
+
+        if(flashError) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: flashError
+            });
+        }
+
+        // Konfirmasi Delete
+        document.querySelectorAll('.delete-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Hapus bahan?',
+                    text: 'Data yang dihapus tidak bisa dikembalikan!',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, hapus',
+                    cancelButtonText: 'Batal',
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
+@endsection

@@ -4,26 +4,42 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\BahanBaku;
+use App\Models\PermintaanDetail;
+use App\Models\Permintaan;
 use Carbon\Carbon;
-use PhpParser\Builder\Function_;
+
 
 class GudangController extends Controller
 {
+    // Reusable code untuk update status bahan
+    private function updateBahanStatus(BahanBaku $bahan, int $jumlahBaru = null){
+        if($jumlahBaru != null){
+            $bahan->jumlah = $jumlahBaru;
+        }
+
+        $today = Carbon::today();
+        $expiredDate = Carbon::parse($bahan->tanggal_kadaluarsa);
+    
+        if ($bahan->jumlah == 0) {
+            $bahan->status = 'habis';
+        } elseif ($today->greaterThanOrEqualTo($expiredDate)) {
+            $bahan->status = 'kadaluarsa';
+        } elseif ($today->lt($expiredDate) && $today->diffInDays($expiredDate) <= 3) {
+            $bahan->status = 'segera kadaluarsa';
+        } else {
+            $bahan->status = 'tersedia';
+        }
+        $bahan->save();
+    }
+
+
     // Halaman dashboard
     public function index(){
         $bahan = BahanBaku::all();
         $today = Carbon::today();
 
         foreach ($bahan as $item) {
-            if ($item->jumlah == 0) {
-                $item->status = 'habis';
-            } elseif ($today >= Carbon::parse($item->tanggal_kadaluarsa)) {
-                $item->status = 'kadaluarsa';
-            } elseif (Carbon::parse($item->tanggal_kadaluarsa)->diffInDays($today) <= 3) {
-                $item->status = 'segera kadaluarsa';
-            } else {
-                $item->status = 'tersedia';
-            }
+            $this->updateBahanStatus($item);
         }
         return view('gudang.index', compact('bahan'));
     }
@@ -76,17 +92,7 @@ class GudangController extends Controller
         $bahan->jumlah = $request->jumlah;
 
         // Update status otomatis
-        if ($bahan->jumlah == 0) {
-            $bahan->status = 'habis';
-        } elseif (now()->diffInDays($bahan->tanggal_kadaluarsa, false) <= 3) {
-            $bahan->status = 'segera kadaluarsa';
-        } elseif (now() >= $bahan->tanggal_kadaluarsa) {
-            $bahan->status = 'kadaluarsa';
-        } else {
-            $bahan->status = 'tersedia';
-        }
-
-        $bahan->save();
+        $this->updateBahanStatus($bahan, $request->jumlah);
 
         return redirect()->back()->with('success', 'Stok berhasil diperbarui');
     }
@@ -95,11 +101,55 @@ class GudangController extends Controller
     public function destroy($id)
     {
         $bahan = BahanBaku::findOrFail($id);
-        if($bahan->status != 'kadaluarsa'){
-            return redirect()->route('gudang.index')->with('error', 'Bahan baku tidak kadaluarsa!');
+
+        // Cek apakah bahan ada di permintaan_detail
+        if (PermintaanDetail::where('bahan_id', $id)->exists()) {
+            return redirect()->back()->with('error', 'Bahan ini masih digunakan di permintaan, tidak bisa dihapus.');
+        }
+
+        // Hanya bahan kadaluarsa yang bisa dihapus
+        $today = Carbon::today();
+        $expiredDate = Carbon::parse($bahan->tanggal_kadaluarsa);
+
+        if ($today->lt($expiredDate)) {
+            return redirect()->back()->with('error', 'Bahan ini belum kadaluarsa, tidak bisa dihapus.');
         }
         $bahan->delete();
         return redirect()->route('gudang.index')->with('success', 'Bahan baku berhasil dihapus');
+    }
+
+    // Halaman Permintaan
+    public function permintaan(){
+        $permintaan = Permintaan::all();
+        return view('gudang.permintaan', compact('permintaan'));
+    }
+
+    // Acc Permintaan
+    public function accPermintaan($id){
+        $permintaan = Permintaan::findOrFail($id);
+        
+        foreach($permintaan->detail as $detail){
+            $bahan = BahanBaku::find($detail->bahan_id);
+            
+            if($bahan->jumlah < $detail->jumlah_diminta){
+                return redirect()->back()->with('error', 'Stok bahan tidak cukup!');
+            }
+
+            $bahan->jumlah -= $detail->jumlah_diminta;
+            // Update status stok
+            $this->updateBahanStatus($bahan, $bahan->jumlah);
+        }
+        $permintaan->status = 'disetujui';
+        $permintaan->save();
+
+        return redirect()->back()->with('success', 'Permintaan berhasil disetujui!');
+    }
+
+    public function tolakPermintaan($id){
+        $permintaan = Permintaan::findOrFail($id);
+        $permintaan->status = 'ditolak';
+        $permintaan->save();
+        return redirect()->back()->with('success', 'Permintaan berhasil ditolak!');
     }
     
 }
