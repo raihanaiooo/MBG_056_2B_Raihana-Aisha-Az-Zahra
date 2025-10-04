@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Admin Dashboard')</title>
+    <title>@yield('title', 'Dashboard')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -15,7 +15,7 @@
             
             <!-- Judul dan info user -->
             <div class="mb-4 md:mb-0">
-                <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+                <h1 class="text-2xl font-bold">@yield('title', 'Dashboard')</h1>
                 <p class="text-sm">
                     Halo, <span class="font-semibold">{{ session('user_name') }}</span> 
                     ({{ session('user_role') }})
@@ -23,16 +23,7 @@
             </div>
 
             <!-- Navigasi halaman -->
-            <nav class="flex flex-col md:flex-row items-center gap-3 mb-4 md:mb-0">
-                <a href="{{ route('gudang.index') }}" 
-                   class=" hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition duration-150">
-                   Bahan Baku
-                </a>
-                <a href="{{ route('gudang.permintaan') }}" 
-                   class=" hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition duration-150">
-                   Permintaan
-                </a>
-            </nav>
+            @yield('navbar')
 
             <!-- Logout -->
             <form action="{{ route('logout') }}" method="POST" class="inline">
@@ -52,5 +43,27 @@
     <!-- Scripts -->
     @yield('scripts')
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const flashSuccess = "{{ session('success') ?? '' }}";
+        const flashError   = "{{ session('error') ?? '' }}";
+        // Buat Popup sweetAlert untuk login
+        if (flashSuccess) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: flashSuccess
+            });
+        }
+        
+        if (flashError) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: flashError
+            });
+        }
+    });
+    </script>
 </body>
 </html>

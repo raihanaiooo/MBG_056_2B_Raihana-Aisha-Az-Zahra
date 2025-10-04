@@ -4,27 +4,13 @@
     <meta charset="UTF-8">
     <title>Tambah Bahan Baku</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
 
 <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-lg">
     <h1 class="text-2xl font-bold mb-6 text-center">Tambah Bahan Baku</h1>
-
-    @if(session('success'))
-        <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if($errors->any())
-        <div class="bg-red-100 text-red-800 px-4 py-2 rounded mb-4">
-            <ul class="list-disc list-inside">
-                @foreach($errors->all() as $err)
-                    <li>{{ $err }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
 
     <form action="{{ route('gudang.store') }}" method="POST" class="space-y-4">
         @csrf
@@ -63,6 +49,26 @@
         </button>
     </form>
 </div>
-
 </body>
 </html>
+<script>
+    const flashSuccess = "{{ session('success') ?? '' }}";
+    const flashError   = "{{ session('error') ?? '' }}";
+    document.addEventListener('DOMContentLoaded', function() {
+            if(flashSuccess) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil Menambah Bahan Baku',
+                text: flashSuccess,
+            });
+        }
+
+        if(flashError) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...ada kesalahan',
+                text: flashError,
+            });
+        }
+    });
+</script>

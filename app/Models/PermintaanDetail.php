@@ -15,8 +15,8 @@ class PermintaanDetail extends Model
         'jumlah_diminta'
     ];
 
-    public $timestamps = true;
-
+    public $timestamps = false;
+    
     public function bahan(){
         return $this->belongsTo(BahanBaku::class, 'bahan_id');
     }
@@ -24,4 +24,5 @@ class PermintaanDetail extends Model
     public function permintaan(){
         return $this->belongsTo(Permintaan::class, 'permintaan_id');
     }
+
 }

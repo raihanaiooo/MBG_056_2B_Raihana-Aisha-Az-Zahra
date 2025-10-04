@@ -5,10 +5,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DapurController;
 use App\Http\Controllers\GudangController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -38,4 +34,8 @@ Route::middleware(['auth.session', 'role:gudang'])->group(function () {
 Route::middleware(['auth.session', 'role:dapur'])->group(function () {
     //Dashboard
     Route::get('/dapur/dashboard', [DapurController::class, 'index'])->name('dapur.index');
+    // Tampilan Permintaan
+    Route::get('/permintaan/create', [DapurController::class,'create'])->name('dapur.create');
+    // Save Permintaan
+    Route::post('/permintaan', [DapurController::class,'store'])->name('dapur.store');
 });

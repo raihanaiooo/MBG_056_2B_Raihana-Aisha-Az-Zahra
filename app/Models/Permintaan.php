@@ -16,7 +16,8 @@ class Permintaan extends Model
         'tgl_masak',
         'menu_makan',
         'jumlah_porsi',
-        'status'
+        'status',
+        'created_at'
     ];
 
     public $timestamps = false;
@@ -28,4 +29,5 @@ class Permintaan extends Model
     public function pemohon(){
         return $this->belongsTo(User::class, 'pemohon_id');
     }
+
 }

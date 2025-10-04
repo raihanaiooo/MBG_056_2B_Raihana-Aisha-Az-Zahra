@@ -8,39 +8,41 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    // Halaman login
     public function showLogin()
     {
         return view('auth.login');
     }
 
+    // Validasi Login
     public function login(Request $request)
     {
-        $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string'
-        ]);
+        $usernameOrEmail = $request->username;
+        $user = User::where('name', $usernameOrEmail)
+                    ->orWhere('email', $usernameOrEmail)
+                    ->first();
 
-        $user = User::where('name', $request->username)->first();
-
-        if (md5($request->password) !== $user->password) {
-            return back()->withErrors(['username' => 'Username atau password salah'])->withInput();
+        // Jika user tidak ada atau password salah
+        if (!$user || md5($request->password) !== $user->password) {
+            return back()->with('error', 'Username atau password salah')->withInput();
         }
 
-        // set session
+        // Set session
         session([
             'user_id'   => $user->id,
             'user_role' => $user->role,
             'user_name' => $user->name
         ]);
 
-        // redirect sesuai role
+        // Redirect sesuai role
         if ($user->role === 'gudang') {
-            return redirect()->route('gudang.index');
+            return redirect()->route('gudang.index')->with('success', 'Login berhasil sebagai Gudang');
         } else {
-            return redirect()->route('dapur.index');
+            return redirect()->route('dapur.index')->with('success', 'Login berhasil sebagai Dapur');
         }
     }
 
+    // Fungsi untuk Logout
     public function logout(Request $request)
     {
         $request->session()->flush();
